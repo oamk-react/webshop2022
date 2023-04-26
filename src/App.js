@@ -9,7 +9,11 @@ import Products from './pages/Products';
 import Product from './pages/Product';
 import Order from './pages/Order';
 import About from './pages/About';
+import Admin from './adminstration/Admin';
+import ManageCategories from './adminstration/ManageCategories';
+import ManageProducts from './adminstration/ManageProducts';
 import NotFound from './pages/NotFound';
+
 
 const URL ='http://localhost:8888/webshop2022/';
 
@@ -48,6 +52,11 @@ function App() {
     localStorage.setItem('cart',JSON.stringify(modifiedCart));
   }
 
+  function emptyCart() {
+    setCart([]);
+    localStorage.removeItem('cart');
+  }
+
   return (
     <>
       <Header />
@@ -55,10 +64,20 @@ function App() {
       <div className='container'>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/products/:categoryId" element={<Products url={URL} addToCart={addToCart}/>} />
-          <Route path="/product/:productId" element={<Product url={URL} />} />
-          <Route path="/order" element={<Order cart={cart} removeFromCart={removeFromCart} updateAmount={updateAmount}/>} />
-          <Route path="/about" element={<About />} />
+          <Route path="products/:categoryId" element={<Products url={URL} />} />
+          <Route path="search/:searchPhrase" element={<Products url={URL} />} />
+          <Route path="product/:productId" element={<Product url={URL} addToCart={addToCart} />} />
+          <Route path="order" element={<Order
+            url={URL} 
+            cart={cart} 
+            removeFromCart={removeFromCart} 
+            updateAmount={updateAmount} 
+            empty={emptyCart} />}
+          />
+          <Route path="about" element={<About />} />
+          <Route path="admin" element={<Admin />} />     
+          <Route path="manage-categories" element={<ManageCategories url={URL}/>} />
+          <Route path="manage-products" element={<ManageProducts url={URL}/>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>

@@ -2,18 +2,32 @@ import axios from 'axios';
 import React,{useState,useEffect} from 'react';
 import { Link, useParams } from 'react-router-dom';
 
-export default function Products({url,addToCart}) {
-  const [categoryName,setCategoryName] = useState('');
+export default function Products({url}) {
+  const [name,setName] = useState('');
   const [products, setProducts] = useState([]);
 
   let params = useParams();
   
   useEffect(() => {
-    axios.get(url + 'products/getproducts.php/' + params.categoryId)
+    let address = '';
+    
+    if (params.searchPhrase === undefined) {
+      address = url + 'products/getproducts.php/' + params.categoryId;
+    } else {
+      address = url + 'products/searchproducts.php/' + params.searchPhrase;
+    }
+
+    axios.get(address)
       .then((response) => {
         const json = response.data;
-        setCategoryName(json.category);
-        setProducts(json.products);
+        if (params.searchPhrase === undefined) {
+          setName(json.category);
+          setProducts(json.products);
+        } else {
+          setName(params.searchPhrase);
+          setProducts(json);
+        }
+
       }).catch(error => {
         alert(error.response === undefined ? error : error.response.data.error);
       })
@@ -21,22 +35,14 @@ export default function Products({url,addToCart}) {
   
   return (  
     <div>
-      <h3>Products for {categoryName}</h3>
+      <h3>Products for {name}</h3>
       {products.map(product => (
-        <div key={product.id}>
-          {product.name}
-          <button className='btn btn-primary' type="button" onClick={e => addToCart(product)}>Add</button>
-        </div>
+        <Link key={product.id} to={'/product/' + product.id}>
+          <div>
+            {product.name}
+          </div>
+        </Link>
       ))}
     </div>
   )
 }
-
-
-
-    {/*    <Link 
-            to={'/product/' + product.id}>
-              <p>
-                {product.name}
-              </p>
-          </Link> */}
